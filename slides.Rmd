@@ -1,0 +1,228 @@
+---
+title: "Nowcasting de radiación solar en Hawaii"
+#institute: "Instituto de Ciencias Matemáticas"
+author: "Alberto Torres Barrán"
+#date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: ["default", "custom.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      beforeInit: "macros.js"
+    includes:
+      before_body: mathjax.html
+    self_contained: true
+---
+
+## Datos
+
+* Radiación solar en el aeropuerto Kalaeloa (Hawaii) ([https://data.nrel.gov/submissions/11](https://data.nrel.gov/submissions/11))
+
+* 17 sensores 
+
+* Resolución temporal 1s
+
+* Marzo de 2010 a Octubre de 2011 (20 meses)
+
+* Desde las 5:00 hasta las 20:00 HST
+
+---
+
+## Objetivo
+
+* Predecir la radiación solar a muy corto plazo (30s, 1min, 10min)
+
+* Series temporales:
+
+  1. Multivariantes
+  
+  2. Correladas espacialmente
+
+---
+
+## Preproceso
+
+* El máximo de radiación varia mucho dependiendo del mes
+
+* Normalizar los datos con un modelo de cielo claro
+
+* Distintos modelos ya implementados en **pysolar** y **pvlib**
+
+
+---
+
+## Datos meteorológicos
+
+1. Modelos de **predicción** meteorológica numérica (Numerical Weather Prediction, NWP)
+
+  * resolución espacial 2.5-16 km
+  
+  * resolucion temporal 1-3 h
+ 
+2. Satélites geoestacionarios (por ej. [METEOSAT](https://www.eumetsat.int/website/home/Satellites/CurrentSatellites/Meteosat/MeteosatDesign/index.html))
+
+  * resolución espacial 1-3 km
+ 
+  * resolución temporal 5-15 min
+  
+3. Estaciones meteorológicas
+
+  * resolución espacial irregular
+  
+  * resolución temporal de minutos o incluso segundos
+
+---
+
+## Modelos base
+
+Persistencia (predecir el valor anterior)
+
+Exponential smoothing (combinación exponencial de los $k$ valores anteriores)
+
+---
+
+class: center, middle
+
+![:scale 80%](img/persistencia.png)
+
+
+![:scale 80%](img/zoom.png)
+---
+
+## Primera aproximación
+
+Convertir a datos tabulares:
+
+|  $t$   | $\mathbf{S1_t}$ | $S1_{t-1}$ | $S1_{t-2}$ | $S2_{t-1}$ | $S2_{t-2}$ | $S3_{t-1}$ | $S3_{t-2}$ |
+|------|----------|----------|----------|----------|----------|----------|---------|
+|   1  |  20      |          |          |          |          |          |         |
+|   2  |  25      |    20    |          |    31    |          |   5      |         |
+|   3  |  30      |    25    |    20    |    32    |   31     |   9      |    5    |
+|   5  |  34      |    30    |    25    |    36    |   32     |   3      |    9    |
+ 
+Usar cualquier modelo para datos estructurados: 
+
+  1. regresión lineal
+  
+  2. SVMs
+  
+  3. random forest
+  
+  4. ...
+ 
+---
+
+## Interpretabilidad
+
+ * Regresión lineal + regularización (Elastic Net)
+
+ * Modelos "interpretables"
+
+
+![:scale 200%](img/enet.png)
+
+---
+
+class: center, middle
+
+![](img/MAEvsSpace.png)
+
+---
+
+class: center, middle
+
+![](img/wind.png)
+
+---
+
+## Convoluciones
+
+* Ordenar los sensores de acuerdo a su longitud
+
+* Red neuronal con convoluciones 1D para explotar estructura
+
+---
+
+## Resultados
+
+MAE de la predicción a 1 paso sobre conjunto test (agosto 2011 - noviembre 2011)
+
+| Modelo       | DH8   | DH3   | AP7   |
+|--------------|-------|-------|-------|
+| Persistencia | 57.26 | 60.00 | **57.00** |
+| ElasticNet   | 45.94 | 58.02 | 71.46 |
+| Conv1D       | **40.20** | **47.61** | 57.06 |
+
+
+
+---
+
+## Aplicación
+
+* Plataforma Solar de Almeria (Tabernas)
+
+* Necesaria predicción de radiación en tiempo real para operar espejos
+
+* Estado del arte: cámaras de cielo
+
+* Posible alternativa: red de sensores
+
+---
+
+background-image: url(img/PSA.webp)
+background-size: cover
+
+![:vspace 95]
+
+.right[
+  .small[
+    [Fuente: El Periódico de la Energía](https://elperiodicodelaenergia.com/la-plataforma-solar-de-almeria-resucita-de-la-mano-del-ciemat/)
+  ]
+]
+
+
+---
+
+## Conclusiones
+
+ * Predecir meteorología a corto plazo es complicado
+ 
+ * Complementar modelos físicos usando aprendizaje automático:
+ 
+    1. mejorar predicciones
+    
+    2. aumentar resolución
+
+ * Modelos que no hemos probado pero deberíamos: Prophet, ARIMA
+
+ * Avances en redes profundas se pueden aplicar también a series temporales ([Using Machine Learning to “Nowcast” Precipitation in High Resolution](https://ai.googleblog.com/2020/01/using-machine-learning-to-nowcast.html))
+
+---
+
+.pull-left[
+.center[
+![](img/roi.png)    
+Roi Naveiro
+
+![](img/victor.png)    
+Victor Gallego
+]
+]
+
+.pull-right[
+.center[
+![](img/ullate.png)    
+David Gómez-Ullate
+
+![](img/simon.png)    
+Simón Rodríguez
+]
+]
+
+.center[
+![:scale 15%](img/david.jpg)    
+David Gordo
+]
