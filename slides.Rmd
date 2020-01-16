@@ -64,7 +64,7 @@ output:
 |   3  |  30      |    25    |    20    |    32    |   31     |   9      |    5    |
 |   5  |  34      |    30    |    25    |    36    |   32     |   3      |    9    |
  
-* Usar cualquier modelo para datos estructurados: 
+* Usar cualquier modelo para datos estructurados (regresión lineal, etc.)
 
 * Incorpora información de todos los sensores
   
@@ -101,22 +101,30 @@ output:
 
 ---
 
-## Convoluciones
+## Convoluciones 1D
 
 * Ordenar los sensores de acuerdo a su longitud
 
 * Red neuronal con convoluciones 1D para explotar estructura
 
-![:vspace 8]
+![:vspace 2]
 
 .center[
-![](img/1d_convolution.png)
+![](img/conv1d.gif)
 ]
-.right[
+
+![:vspace 1]
+
+.center[
+![:scale 60%](img/1d_convolution.png)
+
+
   .footnotesize[
-    Fuente: [Peltarion. 1D Convolution block](https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/blocks/1d-convolution-block)
-  ]
+      Fuente: [Peltarion. 1D Convolution block](https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/blocks/1d-convolution-block)
+    ]
+  
 ]
+
 ---
 
 ## Resultados
@@ -150,9 +158,6 @@ MAE de la predicción a 1 paso sobre conjunto test (agosto 2011 - noviembre 2011
   * resolución espacial irregular
   
   * resolución temporal de minutos o incluso segundos
-
----
-
 
 ---
 
