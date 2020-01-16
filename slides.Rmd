@@ -33,7 +33,7 @@ output:
 
 ## Objetivo
 
-* Predecir la radiación solar a muy corto plazo (30s, 1min, 10min)
+* Predecir la radiación solar a muy corto plazo (30 s, 1 min, 10 min)
 
 * Series temporales:
 
@@ -43,18 +43,90 @@ output:
 
 ---
 
-## Preproceso
+## Persistencia
 
-* El máximo de radiación varia mucho dependiendo del mes
+.center[
+![:scale 68%](img/persistencia.png)
 
-* Normalizar los datos con un modelo de cielo claro
 
-* Distintos modelos ya implementados en **pysolar** y **pvlib**
+![:scale 68%](img/zoom.png)
+]
+---
 
+## Primera aproximación
+
+* Convertir a datos tabulares:
+
+|  $t$   | $\mathbf{S1_t}$ | $S1_{t-1}$ | $S1_{t-2}$ | $S2_{t-1}$ | $S2_{t-2}$ | $S3_{t-1}$ | $S3_{t-2}$ |
+|------|----------|----------|----------|----------|----------|----------|---------|
+|   1  |  20      |          |          |          |          |          |         |
+|   2  |  25      |    20    |          |    31    |          |   5      |         |
+|   3  |  30      |    25    |    20    |    32    |   31     |   9      |    5    |
+|   5  |  34      |    30    |    25    |    36    |   32     |   3      |    9    |
+ 
+* Usar cualquier modelo para datos estructurados: 
+
+* Incorpora información de todos los sensores
+  
+  
+---
+
+## Interpretabilidad
+
+ * Regresión lineal + regularización (Elastic Net)
+
+ * Modelos "interpretables"
+
+
+![:scale 200%](img/enet.png)
 
 ---
 
-## Datos meteorológicos
+## Distribución espacial MAE
+
+![:vspace 8]
+
+.center[
+![](img/MAEvsSpace.png)
+]
+
+---
+
+## Dirección y magnitud del viento
+
+
+.center[
+![](img/wind.png)
+]
+
+---
+
+## Convoluciones
+
+* Ordenar los sensores de acuerdo a su longitud
+
+* Red neuronal con convoluciones 1D para explotar estructura
+
+![:vspace 8]
+
+.center[
+![](img/1d_convolution.png)
+]
+---
+
+## Resultados
+
+MAE de la predicción a 1 paso sobre conjunto test (agosto 2011 - noviembre 2011)
+
+| Modelo       | Izquierda   | Centro   | Derecha   |
+|--------------|-------|-------|-------|
+| Persistencia | .red[57.26] | .red[60.00] | .green[57.00] |
+| ElasticNet   | 45.94 | 58.02 | .red[71.46] |
+| Conv1D       | .green[40.20] | .green[47.61] | 57.06 |
+
+---
+
+## Posibles mejoras
 
 1. Modelos de **predicción** meteorológica numérica (Numerical Weather Prediction, NWP)
 
@@ -76,87 +148,6 @@ output:
 
 ---
 
-## Modelos base
-
-Persistencia (predecir el valor anterior)
-
-Exponential smoothing (combinación exponencial de los $k$ valores anteriores)
-
----
-
-class: center, middle
-
-![:scale 80%](img/persistencia.png)
-
-
-![:scale 80%](img/zoom.png)
----
-
-## Primera aproximación
-
-Convertir a datos tabulares:
-
-|  $t$   | $\mathbf{S1_t}$ | $S1_{t-1}$ | $S1_{t-2}$ | $S2_{t-1}$ | $S2_{t-2}$ | $S3_{t-1}$ | $S3_{t-2}$ |
-|------|----------|----------|----------|----------|----------|----------|---------|
-|   1  |  20      |          |          |          |          |          |         |
-|   2  |  25      |    20    |          |    31    |          |   5      |         |
-|   3  |  30      |    25    |    20    |    32    |   31     |   9      |    5    |
-|   5  |  34      |    30    |    25    |    36    |   32     |   3      |    9    |
- 
-Usar cualquier modelo para datos estructurados: 
-
-  1. regresión lineal
-  
-  2. SVMs
-  
-  3. random forest
-  
-  4. ...
- 
----
-
-## Interpretabilidad
-
- * Regresión lineal + regularización (Elastic Net)
-
- * Modelos "interpretables"
-
-
-![:scale 200%](img/enet.png)
-
----
-
-class: center, middle
-
-![](img/MAEvsSpace.png)
-
----
-
-class: center, middle
-
-![](img/wind.png)
-
----
-
-## Convoluciones
-
-* Ordenar los sensores de acuerdo a su longitud
-
-* Red neuronal con convoluciones 1D para explotar estructura
-
----
-
-## Resultados
-
-MAE de la predicción a 1 paso sobre conjunto test (agosto 2011 - noviembre 2011)
-
-| Modelo       | DH8   | DH3   | AP7   |
-|--------------|-------|-------|-------|
-| Persistencia | 57.26 | 60.00 | **57.00** |
-| ElasticNet   | 45.94 | 58.02 | 71.46 |
-| Conv1D       | **40.20** | **47.61** | 57.06 |
-
-
 
 ---
 
@@ -166,9 +157,9 @@ MAE de la predicción a 1 paso sobre conjunto test (agosto 2011 - noviembre 2011
 
 * Necesaria predicción de radiación en tiempo real para operar espejos
 
-* Estado del arte: cámaras de cielo
+* **Estado del arte**: cámaras de cielo
 
-* Posible alternativa: red de sensores
+* **Posible alternativa**: red de sensores
 
 ---
 
@@ -186,20 +177,12 @@ background-size: cover
 
 ---
 
-## Conclusiones
+## Conclusión
 
- * Predecir meteorología a corto plazo es complicado
+ * Trasladar la intuición física a la arquitectura de la red
  
- * Complementar modelos físicos usando aprendizaje automático:
+ * Explotamos las correlaciones espaciales de los sensores
  
-    1. mejorar predicciones
-    
-    2. aumentar resolución
-
- * Modelos que no hemos probado pero deberíamos: Prophet, ARIMA
-
- * Avances en redes profundas se pueden aplicar también a series temporales ([Using Machine Learning to “Nowcast” Precipitation in High Resolution](https://ai.googleblog.com/2020/01/using-machine-learning-to-nowcast.html))
-
 ---
 
 .pull-left[
