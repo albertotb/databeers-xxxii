@@ -112,6 +112,11 @@ output:
 .center[
 ![](img/1d_convolution.png)
 ]
+.right[
+  .footnotesize[
+    Fuente: [Peltarion. 1D Convolution block](https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/blocks/1d-convolution-block)
+  ]
+]
 ---
 
 ## Resultados
