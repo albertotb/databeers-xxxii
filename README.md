@@ -1,5 +1,5 @@
-# Databeers-XXXII
+# Nowcasting de radiación solar en Hawaii
 
-    * Presentación [[HTML](slides.html)]
+   * Presentación [[HTML](slides.html)]
     
-    * Presentación [[PDF](slides.pdf)]
+   * Presentación [[PDF](slides.pdf)]
