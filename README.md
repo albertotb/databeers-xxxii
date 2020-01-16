@@ -1,3 +1,5 @@
 # Databeers-XXXII
 
-[Presentación](slides.html)
+    * Presentación [[HTML](slides.html)]
+    
+    * Presentación [[PDF](slides.pdf)]
